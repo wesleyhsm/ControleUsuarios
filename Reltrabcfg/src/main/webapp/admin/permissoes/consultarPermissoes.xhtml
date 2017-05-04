@@ -1,0 +1,135 @@
+<ui:composition template="../../template/admin.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="titulo">Consultar Permissão</ui:define>
+
+	<ui:define name="conteudo">
+
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><h:link outcome="/admin/home.xhtml"><i class="fa fa-home"/></h:link></li>
+			<li class="breadcrumb-item">Permissões</li>
+			<li class="breadcrumb-item">Consultar</li>
+		</ol>
+	
+		<h:outputText value="Usuario sem permissão" rendered="#{permissoesConsultarBean.usuarioPermissao.snVisualizar != true}"/>
+	
+		<h:form id="frmFiltro" rendered="#{permissoesConsultarBean.usuarioPermissao.snVisualizar}">
+			<div class="row">
+				<div class="col-md-12">
+					<p:toolbar>
+						<f:facet name="left">
+							<p:commandButton update="@form :frmdt:dtPermissao" value="Filtrar" class="blue" icon="fa fa-filter" />
+						</f:facet>
+						<f:facet name="right">
+							<p:button outcome="/admin/permissoes/adicionarPermissoes.xhtml"	value="Adicionar" class="green" icon="fa fa-plus" rendered="#{permissoesConsultarBean.usuarioPermissao.snAdicionar}"/>
+						</f:facet>
+					</p:toolbar>
+
+					<p:messages autoUpdate="false" id="msg" closable="true" />
+				</div>
+			</div>
+
+			<div class="row filter">
+				<div class="col-md-12">
+
+					<p:fieldset legend="Filtro" toggleable="true" toggleSpeed="300">
+						<div class="row">
+
+							<div class="col-md-4 col-sm-6 col-xs-12">
+								<p:outputLabel for="tipo" value="Tipo de Busca" class="label" />
+								<p:selectOneMenu id="tipo"
+									value="#{permissoesConsultarBean.permissoesFiltro.nrTipoBusca}">
+									<f:selectItem itemLabel="Todos" itemValue="0" />
+									<f:selectItem itemLabel="Codigo" itemValue="1" />
+									<f:selectItem itemLabel="Nome" itemValue="2" />
+								</p:selectOneMenu>
+							</div>
+
+							<div class="col-md-4 col-sm-6 col-xs-12">
+								<p:outputLabel for="termo" value="Termo da Busca" class="label" />
+								<p:inputText id="termo" placeholder="Termo da Busca"
+									value="#{permissoesConsultarBean.permissoesFiltro.nmTermoBusca}" />
+							</div>
+
+							<div class="col-md-4 col-sm-6 col-xs-12">
+								<p:outputLabel for="setor" value="Setor" class="label" />
+								<p:selectOneMenu id="setor"
+									value="#{permissoesConsultarBean.permissoesFiltro.permissaoSetores}">
+									<f:selectItem itemLabel="Todos" />
+									<f:selectItems value="#{permissoesAdicionarBean.permissaoSetores}" var="setores" itemLabel="#{setores.nome}" itemValue="#{setores}" />
+								</p:selectOneMenu>
+							</div>
+
+							<div class="col-md-4 col-sm-6 col-xs-12">
+								<p:outputLabel for="status" value="Status" class="label" />
+								<p:selectOneMenu id="status"
+									value="#{permissoesConsultarBean.permissoesFiltro.snStatus}">
+									<f:selectItem itemLabel="Todos" />
+									<f:selectItem itemLabel="Ativada" itemValue="true" />
+									<f:selectItem itemLabel="Desativada" itemValue="false" />
+								</p:selectOneMenu>
+							</div>
+
+							<div class="col-md-4 col-sm-6 col-xs-12">
+								<p:outputLabel for="ordem" value="Ordenação" class="label" />
+								<p:selectOneMenu id="ordem"
+									value="#{permissoesConsultarBean.permissoesFiltro.nrOrdenacao}">
+									<f:selectItem itemLabel="Crescente (A - Z)" itemValue="1" />
+									<f:selectItem itemLabel="Decrecente (Z - A)" itemValue="2" />
+									<f:selectItem itemLabel="Crescente (0 - 9)" itemValue="3" />
+									<f:selectItem itemLabel="Decrecente (9 - 0)" itemValue="4" />
+								</p:selectOneMenu>
+							</div>
+
+						</div>
+					</p:fieldset>
+				</div>
+			</div>
+
+		</h:form>
+
+		<h:form id="frmdt" rendered="#{permissoesConsultarBean.usuarioPermissao.snVisualizar}">
+			<p:dataTable id="dtPermissao" var="dtPermissoes" value="#{permissoesConsultarBean.lazyPermissoes}" paginator="true"	lazy="true" rows="10" emptyMessage="Nenhum resultado encontrado">
+				<p:column headerText="Código" width="70" style="text-align: center;">
+					<h:outputText value="#{dtPermissoes.idPermissao}" />
+				</p:column>
+				<p:column headerText="Janela">
+					<h:outputText value="#{dtPermissoes.nmJanela}" />
+				</p:column>
+				<p:column headerText="Data" width="110"
+					style="text-align: center;">
+					<h:outputText value="#{dtPermissoes.dtCriacao}">
+						<f:convertDateTime pattern="dd/MM/yy HH:mm" locale="pt" />
+					</h:outputText>
+				</p:column>
+				<p:column headerText="Setor" width="250">
+					<h:outputText value="#{dtPermissoes.permissaoSetor.nome}" />
+				</p:column>
+				<p:column headerText="Status" width="90" style="text-align: center;">
+					<h:outputText value="#{dtPermissoes.snStatus == true? 'Ativado' : 'Desativado'}" />
+				</p:column>
+				<p:column width="120" style="text-align: center;">
+					<p:button outcome="visualizarPermissoes.xhtml?id=#{dtPermissoes.idPermissao}" icon="fa fa-eye" title="Visualizar" rendered="#{permissoesConsultarBean.usuarioPermissao.snVisualizar}"/>						
+					
+					<p:button outcome="adicionarPermissoes.xhtml?id=#{dtPermissoes.idPermissao}" icon="fa fa-edit" title="Editar" rendered="#{permissoesConsultarBean.usuarioPermissao.snEditar}"/>
+					
+					<p:commandButton update="@form :frmFiltro:msg" action="#{permissoesConsultarBean.excluir(dtPermissoes)}" icon="fa fa-trash" title="Excluir" rendered="#{permissoesConsultarBean.usuarioPermissao.snRemover}">
+						<p:confirm header="Excluir permissão código: #{dtPermissoes.idPermissao}" message="Você tem certeza?" icon="ui-icon-alert"/>
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+			
+			<p:confirmDialog global="true" showEffect="fade">
+				<p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+		</h:form>
+
+	</ui:define>
+</ui:composition>

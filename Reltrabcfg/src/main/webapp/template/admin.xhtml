@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<h:head>
+	<meta charset="UTF-8" />
+	<title>CFG : <ui:insert name="titulo"></ui:insert></title>
+	
+	<link rel="shortcut icon" href="#{request.contextPath}/resources/img/favicon.ico" type="image/x-icon"/>
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+	<link rel="stylesheet" type="text/css" href="#{request.contextPath}/resources/css/reset.css" />
+	<link rel="stylesheet" type="text/css" href="#{request.contextPath}/resources/css/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="#{request.contextPath}/resources/css/scrollbar.css" />
+	<link rel="stylesheet" href="http://faunasystem.com.br/externo/admin.css" />
+	<!-- <link rel="stylesheet" type="text/css" href="#{request.contextPath}/resources/css/admin.css" /> -->
+		
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" />	
+	<script type="text/javascript" src="#{request.contextPath}/resources/js/scrollbar.js" />	
+	<script type="text/javascript" src="http://faunasystem.com.br/externo/admin.js"/>
+
+</h:head>
+
+<h:body>
+	<p:ajaxStatus styleClass="ajax-status">
+		<f:facet name="start">
+			<!-- <h:graphicImage url="#{request.contextPath}/../resources/img/loader.gif"/> -->
+		</f:facet>
+		<f:facet name="complete">
+			<h:outputText value="" />
+		</f:facet>
+	</p:ajaxStatus>
+
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+
+	<p:dialog widgetVar="statusDialog" modal="true" draggable="false"
+		closable="false" resizable="false" showHeader="false">
+		<p:graphicImage
+			url="#{request.contextPath}/../resources/img/loader.gif" />
+	</p:dialog>
+	
+	<!-- menu topo -->
+	<nav class="container-fluid"> <!-- logotipo superior -->
+	<div class="row">
+		<header> <h:outputLink class="menuG"
+			value="#{request.contextPath}/admin/home.xhtml">
+			<img src="#{request.contextPath}/resources/img/logo-agro-fauna.png" />
+		</h:outputLink> <h:outputLink class="menuP"
+			value="#{request.contextPath}/admin/home.xhtml">
+			<img
+				src="#{request.contextPath}/resources/img/logo-agro-fauna-mini.png" />
+		</h:outputLink> </header>
+		<div class="left">
+			<a onclick="hideMenu()">
+				<i class="fa fa-bars"></i>
+			</a>
+			<h:link outcome="/admin/home.xhtml" title="Página Inicial">
+				<i class="fa fa-home"></i>
+			</h:link>
+		  <div class="dropdown">
+			<i class="fa fa-globe dropdown-toggle" data-toggle="dropdown" title="Páginas"></i>
+			<ul class="dropdown-menu">
+				<li class="dropdown-header">Projetos Agro-Fauna</li>
+				<li><a href="http://www.agrofauna.com.br/SiteAgroFauna/hotsite/encomenda/index.xhtml" target="_blank">Hotsite Encomenda</a></li>
+				<li><a href="http://faunasystem.com.br/listas" target="_blank">Listas de Distribuição</a></li>
+				<li><a href="http://agrofauna.com.br" target="_blank">Site Institucional</a></li>
+				<li><a href="http://tratordecompras.com.br" target="_blank">Trator de Comprasr</a></li>
+			</ul>
+		</div>
+		</div>
+		<div class="right">
+			<p:graphicImage class="profile"
+			url="#{request.contextPath}/../resources/img/profile.png" />
+			<span class="name"> <h:outputText value="#{loginBean.primeiroNomeFuncionario}"/>
+			</span>
+			<p:commandLink action="#{loginBean.deslogar()}" title="Sair">
+				<i class="fa fa-sign-out"></i>
+			</p:commandLink>
+		</div>
+	</div>
+	</nav>
+
+	<div id="sidebar" class="menuG">
+		<div class="row">
+			<div class="col-md-12">
+				<h:form id="menu">
+					<p:panelMenu style="width:100%">																
+						<p:submenu label="Empresas">										
+							<p:menuitem value="Consultar" url="/admin/empresas/consultarEmpresas.xhtml" icon="fa fa-bars" />
+						</p:submenu>
+							
+						<p:submenu label="Usuários">
+							<p:menuitem value="Relacionar" url="/admin/usuarios/relacionarUsuarios.xhtml" icon="fa fa-retweet" />
+							<p:menuitem value="Consultar"  url="/admin/usuarios/consultarUsuarios.xhtml" icon="fa fa-bars" />																		
+						</p:submenu>
+						
+						<p:submenu label="Permissões">							
+							<p:menuitem value="Consultar" url="/admin/permissoes/consultarPermissoes.xhtml" icon="fa fa-bars" />																				
+						</p:submenu>
+						
+						<p:submenu label="Relatórios">							
+							<p:menuitem value="Logs" url="/admin/logs/consultarLogs.xhtml" icon="fa fa-file-pdf-o" />																				
+						</p:submenu>
+					</p:panelMenu>
+				</h:form>
+			</div>
+		</div>
+	</div>
+
+	<div id="content">
+		<!-- conteúdo -->
+		<div class="container-fluid">
+			<ui:insert name="conteudo"></ui:insert>
+		</div>
+	</div>
+</h:body>
+</html>

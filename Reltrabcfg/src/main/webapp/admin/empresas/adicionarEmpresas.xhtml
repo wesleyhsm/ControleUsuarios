@@ -1,0 +1,324 @@
+<ui:composition template="../../template/admin.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="titulo">Adicionar Empresa</ui:define>
+
+	<ui:define name="conteudo">
+
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><h:link outcome="/admin/home.xhtml"><i class="fa fa-home"/></h:link></li>
+			<li class="breadcrumb-item">Empresas</li>
+			<li class="breadcrumb-item"><h:link outcome="/admin/empresas/consultarEmpresas.xhtml">Consultar</h:link></li>
+			<li class="breadcrumb-item"><h:outputText id="titulo" value="#{empresaAdicionarBean.nomeJanela == true? 'Editar' : 'Adicionar'}"/></li>
+		</ol>
+		
+		<h:outputText value="Usuario sem permissão" rendered="#{empresaAdicionarBean.usuarioPermissao.snAdicionar != true}"/>
+
+		<h:form styleClass="col-md-12" id="frm2" rendered="#{empresaAdicionarBean.usuarioPermissao.snAdicionar}">
+			<div class="row">
+				<p:toolbar>
+					<f:facet name="left">
+						<p:button outcome="/admin/empresas/consultarEmpresas.xhtml" value="Voltar" class="red" icon="fa fa-arrow-left" />
+					</f:facet>
+					<f:facet name="right">
+						<p:commandButton process="@this" update=":frm:tabView:tabDados @form titulo" action="#{empresaAdicionarBean.salvar}" value="Finalizar" class="green" icon="fa fa-save"/>
+					</f:facet>
+				</p:toolbar>
+				
+				<p:messages id="msg" autoUpdate="false" closable="true"/>
+			</div>
+		</h:form>
+		
+		<h:form styleClass="col-md-12" id="frm" rendered="#{empresaAdicionarBean.usuarioPermissao.snAdicionar}">
+			<div class="row filter">
+
+				<p:tabView id="tabView">
+					<p:tab title="Dados">
+						<div class="row">
+							<p:fieldset legend="" toggleable="" toggleSpeed="300" id="tabDados">
+								<div class="row">
+									<div class="col-md-4 col-sm-6 col-xs-12">
+										<p:outputLabel for="codigo" value="Codigo" class="label" />
+										<p:inputText id="codigo" value="#{empresaAdicionarBean.empresa.idPessoa}" placeholder="Codigo" readonly="true"/>
+									</div>				
+									<div class="col-md-4 col-sm-6 col-xs-12">
+										<p:outputLabel for="cpfcnpj" value="CNPJ" class="label" />
+										<p:inputMask mask="99.999.999/9999-99" id="cpfcnpj" value="#{empresaAdicionarBean.empresa.nmCnpjCpf}" placeholder="CNPJ" required="true"/>
+									</div>
+									<div class="col-md-4 col-sm-6 col-xs-12">
+										<p:outputLabel for="ierg" value="Inscriçao Estadual" class="label" />
+										<p:inputMask mask="?99999999999999999999" id="ierg" placeholder="IE" value="#{empresaAdicionarBean.empresa.nmInscricaoEstadual}"/>
+									</div>					
+									<div class="col-md-6 col-sm-6 col-xs-12">
+										<p:outputLabel for="razao" value="Razao Social" class="label" />
+										<p:inputText id="razao"	value="#{empresaAdicionarBean.empresa.nmRazaoSocial}" maxlength="60" placeholder="Razão Social" required="true"/>
+									</div>
+									<div class="col-md-6 col-sm-6 col-xs-12">
+										<p:outputLabel for="fantasia" value="Nome Fantasia"	class="label" />
+										<p:inputText id="fantasia" value="#{empresaAdicionarBean.empresa.nmFantasia}" maxlength="60" placeholder="Razão Social" required="true"/>
+									</div>								
+									<div class="col-md-4 col-sm-6 col-xs-12">
+										<p:outputLabel for="fundac" value="Data de Fundação" class="label" />
+										<p:calendar id="fundac" placeholder="00/00/0000" pattern="dd/MM/yyyy" navigator="true" locale="pt" value="#{empresaAdicionarBean.empresa.dtFundacao}" required="true"/>
+									</div>
+									<div class="col-md-4 col-sm-6 col-xs-12">
+										<p:outputLabel for="filial" value="Nome Matriz/Filial" class="label" />
+										<p:inputText id="filial" value="#{empresaAdicionarBean.empresa.nmFilial}" maxlength="60" placeholder="Filial" required="true"/>
+									</div>				
+									<div class="col-md-4 col-sm-6 col-xs-12">
+										<p:outputLabel for="status" value="Status" class="label" />										
+								        <p:selectOneMenu id="status" value="#{empresaAdicionarBean.empresa.snStatus}">
+								            <f:selectItem itemLabel="Ativado" itemValue="true" />
+								            <f:selectItem itemLabel="Desativado" itemValue="false"/>								            
+								        </p:selectOneMenu>								        
+									</div>
+									<div class="col-md-12 col-sm-6 col-xs-12">
+										<p:commandButton process="tabDados" update=":frm:tabView:tabDados :frm2:msg" action="#{empresaAdicionarBean.adicionaEmpresaNaLista}" value="Adicionar" class="green" />
+									</div>									
+								</div>
+							</p:fieldset>
+						</div>
+					</p:tab>
+
+					<p:tab title="Endereço">
+						<div class="row">
+							<p:fieldset legend="" toggleable="" toggleSpeed="300" id="tabEndereco">
+								<div class="row">
+								
+									<div class="col-md-3 col-sm-6 col-xs-12">
+										<p:outputLabel for="cep" value="cep" class="label" />
+										<p:inputMask mask="99999-999" id="cep" placeholder="00000-000" value="#{empresaAdicionarBean.endereco.nmCep}" required="true">
+											<p:ajax event="change" update="estado cidade rua bairro" process="@this" listener="#{empresaAdicionarBean.atualizarEndereco}"/>
+										</p:inputMask>									
+									</div>
+									<div class="col-md-3 col-sm-6 col-xs-12">
+										<p:outputLabel for="tipo" value="tipo" class="label" />
+										<p:selectOneMenu id="tipo" value="#{empresaAdicionarBean.endereco.enderecoTipo}">											
+											<f:selectItems value="#{empresaAdicionarBean.enderecoTipos}" var="enderecoTipo" itemLabel="#{enderecoTipo.nome}" itemValue="#{enderecoTipo}" />
+										</p:selectOneMenu>
+									</div>
+									<div class="col-md-2 col-sm-6 col-xs-12">
+										<p:outputLabel for="estado" value="estado" class="label" />
+										<p:selectOneMenu id="estado" value="#{empresaAdicionarBean.estado.idEstado}">
+											<f:selectItems value="#{empresaAdicionarBean.estados}" var="estado" itemLabel="#{estado.nmEstado}" itemValue="#{estado.idEstado}"/>
+										</p:selectOneMenu>
+									</div>
+									<div class="col-md-4 col-sm-6 col-xs-12">
+										<p:outputLabel for="cidade" value="cidade" class="label" />
+										<p:inputText id="cidade" placeholder="cidade" value="#{empresaAdicionarBean.endereco.nmCidade}" required="true" maxlength="60"/>
+									</div>
+									<div class="col-md-6 col-sm-6 col-xs-12">
+										<p:outputLabel for="rua" value="rua" class="label" />
+										<p:inputText id="rua" placeholder="Nome da Rua" value="#{empresaAdicionarBean.endereco.nmRua}" required="true" maxlength="60"/>
+									</div>
+									<div class="col-md-2 col-sm-6 col-xs-12">
+										<p:outputLabel for="num" value="número" class="label" />
+										<p:inputText id="num" placeholder="00000" value="#{empresaAdicionarBean.endereco.nmNumero}" required="true" maxlength="15"/>
+									</div>
+									<div class="col-md-4 col-sm-6 col-xs-12">
+										<p:outputLabel for="bairro" value="bairro" class="label" />
+										<p:inputText id="bairro" placeholder="Nome do Bairro" value="#{empresaAdicionarBean.endereco.nmBairro}" required="true" maxlength="60"/>
+									</div>
+									<div class="col-md-12 col-sm-6 col-xs-12">
+										<p:commandButton process="tabEndereco" update=":frm:tabView:tabEndereco :frm:tabView:dtEndereco :frm2:msg" action="#{empresaAdicionarBean.adicionaEnderecoNaLista}" value="Adicionar" class="green" />
+									</div>
+									
+								</div>
+							</p:fieldset>
+
+							<p:dataTable id="dtEndereco" var="endereco" value="#{empresaAdicionarBean.enderecos}" paginator="true" rows="10" lazy="true" emptyMessage="Nenhum resultado encontrado">							
+								<p:column headerText="Endereço">
+									<h:outputText value="#{endereco.nmRua}"/>
+								</p:column>
+								<p:column headerText="Nº" width="100" class="txt-center">
+									<h:outputText value="#{endereco.nmNumero}" />
+								</p:column>
+								<p:column headerText="Cidade" width="200">
+									<h:outputText value="#{endereco.nmCidade}" /> - <h:outputText value="#{endereco.estado.nmEstado}" />
+								</p:column>
+								<p:column headerText="Tipo" width="200">
+									<h:outputText value="#{endereco.enderecoTipo.nome}" />
+								</p:column>
+								<p:column width="90" class="txt-center">
+									<p:commandButton process="dtEndereco" update=":frm:tabView:tabEndereco :frm:tabView:dtEndereco :frm2:msg" action="#{empresaAdicionarBean.editarEnderecoNaLista(endereco)}" icon="fa fa-edit" title="Editar"/>
+					
+									<p:commandButton process="dtEndereco" update=":frm:tabView:dtEndereco :frm2:msg" action="#{empresaAdicionarBean.excluirEnderecoNalista(endereco)}" icon="fa fa-trash" title="Excluir">
+										<p:confirm header="Excluir Endereço: #{endereco.nmRua}" message="Você tem certeza?" icon="ui-icon-alert"/>
+									</p:commandButton>
+								</p:column>
+							</p:dataTable>
+						</div>
+					</p:tab>
+
+					<p:tab title="Telefones">
+						<div class="row">
+							<p:fieldset legend="" toggleable="" toggleSpeed="300" id="tabTelefone">
+								<div class="row">
+									<div class="col-md-6 col-sm-6 col-xs-12">
+										<p:outputLabel for="phone" value="telefone" class="label" />
+										<p:inputMask mask="(99) 99999999?9" id="phone" placeholder="(xx) xxxxxxxx" value="#{empresaAdicionarBean.telefone.nmTelefone}" required="true"/>
+									</div>
+									<div class="col-md-6 col-sm-6 col-xs-12">
+										<p:outputLabel for="foneTipo" value="nome contato" class="label" required="true"/>
+										<p:selectOneMenu id="foneTipo" value="#{empresaAdicionarBean.telefone.telefoneTipo}">
+											<f:selectItems value="#{empresaAdicionarBean.telefoneTipos}" var="foneTipo" itemLabel="#{foneTipo.nome}" itemValue="#{foneTipo}"/>
+										</p:selectOneMenu>
+									</div>				
+									<div class="col-md-6 col-sm-6 col-xs-12">
+										<p:outputLabel for="statusTelefone" value="Status" class="label" />										
+								        <p:selectOneMenu id="statusTelefone" value="#{empresaAdicionarBean.telefone.snStatus}">
+								            <f:selectItem itemLabel="Ativado" itemValue="true" />
+								            <f:selectItem itemLabel="Desativado" itemValue="false"/>								            
+								        </p:selectOneMenu>								        
+									</div>					
+									<div class="col-md-12 col-sm-6 col-xs-12">
+										<p:commandButton process="tabTelefone" update=":frm:tabView:tabTelefone :frm:tabView:dtTelefone :frm2:msg" action="#{empresaAdicionarBean.adicionarTelefoneNaLista}" value="Adicionado" class="green" />
+									</div>
+								</div>
+							</p:fieldset>
+							<p:dataTable id="dtTelefone" var="fone" value="#{empresaAdicionarBean.telefones}" paginator="true" rows="10"	lazy="true" emptyMessage="Nenhum resultado encontrado">
+								<p:column headerText="Telefone">
+									<h:outputText value="#{fone.nmTelefone}" />
+								</p:column>
+								<p:column headerText="Tipo" class="txt-center">
+									<h:outputText value="#{fone.telefoneTipo.nome}" />
+								</p:column>
+								<p:column headerText="Status" class="txt-center">
+									<h:outputText value="#{fone.snStatus == true? 'Ativado' : 'Desativado'}"/>
+								</p:column>
+								<p:column width="90" class="txt-center">
+									<p:commandButton process="dtTelefone" update=":frm:tabView:tabTelefone :frm:tabView:dtTelefone :frm2:msg" action="#{empresaAdicionarBean.editarTelefoneNaLista(fone)}" icon="fa fa-edit" title="Editar"/>
+									
+									<p:commandButton process="dtTelefone" update=":frm:tabView:dtTelefone :frm2:msg" action="#{empresaAdicionarBean.excluirTelefoneNaLista(fone)}" icon="fa fa-trash" title="Remover">
+										<p:confirm header="Excluir Telefone: #{fone.nmTelefone}" message="Você tem certeza?" icon="ui-icon-alert"/>
+									</p:commandButton>
+								</p:column>
+							</p:dataTable>
+
+						</div>
+					</p:tab>
+					
+					<p:tab title="Emails">
+						<div class="row">
+							<p:fieldset legend="" toggleable="" toggleSpeed="300" id="tabEmail">
+								<div class="row">
+									<div class="col-md-6 col-sm-6 col-xs-12">
+										<p:outputLabel for="mail" value="e-mail" class="label" />
+										<p:inputText id="mail" placeholder="E-mail Válido" value="#{empresaAdicionarBean.email.nmEmail}" required="true"/>
+									</div>
+									<div class="col-md-6 col-sm-6 col-xs-12">
+										<p:outputLabel for="tipoEmail" value="Tipo" class="label" />
+										<p:selectOneMenu id="tipoEmail" value="#{empresaAdicionarBean.email.emailTipo}">
+											<f:selectItems value="#{empresaAdicionarBean.emailTipos}" var="emailTipo" itemLabel="#{emailTipo.nome}" itemValue="#{emailTipo}"/>
+										</p:selectOneMenu>
+									</div>
+									<div class="col-md-6 col-sm-6 col-xs-12">
+										<p:outputLabel for="statusEmail" value="Status" class="label" />										
+								        <p:selectOneMenu id="statusEmail" value="#{empresaAdicionarBean.email.snStatus}">
+								            <f:selectItem itemLabel="Ativado" itemValue="true" />
+								            <f:selectItem itemLabel="Desativado" itemValue="false"/>								            
+								        </p:selectOneMenu>								        
+									</div>
+									<div class="col-md-12 col-sm-6 col-xs-12">
+										<p:commandButton process="tabEmail" update=":frm:tabView:tabEmail :frm:tabView:dtEmail :frm2:msg" action="#{empresaAdicionarBean.adicionarEmailNaLista}" value="Adicionado" class="green" />
+									</div>
+								</div>
+							</p:fieldset>
+							
+							<p:dataTable id="dtEmail" var="mail" value="#{empresaAdicionarBean.emails}" paginator="true" rows="10"	lazy="true" emptyMessage="Nenhum resultado encontrado">
+								<p:column headerText="E-mail">
+									<h:outputText value="#{mail.nmEmail}" />
+								</p:column>
+								<p:column headerText="Contato" class="txt-center">
+									<h:outputText value="#{mail.emailTipo.nome}" />
+								</p:column>
+								<p:column headerText="Status" class="txt-center">
+									<h:outputText value="#{mail.snStatus == true? 'Ativado' : 'Desativado'}"/>
+								</p:column>
+								<p:column width="90" class="txt-center">
+									<p:commandButton process="dtEmail" update=":frm:tabView:tabEmail :frm:tabView:dtEmail :frm2:msg" action="#{empresaAdicionarBean.editarEmailNaLista(mail)}" icon="fa fa-edit" title="Editar"/>
+									
+									<p:commandButton process="dtEmail" update=":frm:tabView:dtEmail :frm2:msg" action="#{empresaAdicionarBean.excluirEmailNaLista(mail)}" icon="fa fa-trash" title="Remover">
+										<p:confirm header="Excluir E-mail: #{mail.nmEmail}" message="Você tem certeza?" icon="ui-icon-alert"/>
+									</p:commandButton>
+								</p:column>
+							</p:dataTable>
+						</div>
+					</p:tab>
+					
+					<p:tab title="NF-e">
+						<div class="row">
+							<p:fieldset legend="" toggleable="" toggleSpeed="300" id="tabNfe">
+								<div class="row">
+									<div class="col-md-6 col-sm-6 col-xs-12">
+										<p:outputLabel for="caminhoPasta" value="Caminho pasta" class="label" />
+										<p:inputText id="caminhoPasta" placeholder="EX: /opt/nfe/" value="#{empresaAdicionarBean.nfeConfiguracao.nmCaminhoCerticadoDigital}" required="true"/>
+									</div>
+									<div class="col-md-6 col-sm-6 col-xs-12">
+										<p:outputLabel for="nomeCertifado" value="Nome Certificado Digital" class="label" />
+										<p:inputText id="nomeCertifado" placeholder="EX: certificado.cer" value="#{empresaAdicionarBean.nfeConfiguracao.nmCerticadoDigital}" required="true"/>
+									</div>
+									<div class="col-md-6 col-sm-6 col-xs-12">
+										<p:outputLabel for="nomeCacerts " value="Nome Cacerts" class="label" />
+										<p:inputText id="nomeCacerts" placeholder="EX: NFeCacerts (Arquivo gerado para consumir webservices do projeto NF-e)" value="#{empresaAdicionarBean.nfeConfiguracao.nmNFeCacerts}" required="true"/>
+									</div>
+									<div class="col-md-6 col-sm-6 col-xs-12">
+										<p:outputLabel for="senhaCertifado" value="Senha Certificado Digital" class="label"/>
+										<p:inputText id="senhaCertifado" placeholder="EX: *******" value="#{empresaAdicionarBean.nfeConfiguracao.nmCerticadoSenha}" required="true"/>
+									</div>
+									<div class="col-md-6 col-sm-6 col-xs-12">
+										<p:outputLabel for="statusNfe" value="Status" class="label" />										
+								        <p:selectOneMenu id="statusNfe" value="#{empresaAdicionarBean.nfeConfiguracao.snStatus}">
+								            <f:selectItem itemLabel="Ativado" itemValue="true" />
+								            <f:selectItem itemLabel="Desativado" itemValue="false"/>								            
+								        </p:selectOneMenu>								        
+									</div>																											
+									<div class="col-md-12 col-sm-6 col-xs-12">
+										<p:commandButton process="tabNfe" update=":frm:tabView:tabNfe :frm:tabView:dtNfe :frm2:msg" action="#{empresaAdicionarBean.adicionarNfeConfiguracaoNaLista}" value="Adicionado" class="green" />
+									</div>
+								</div>
+							</p:fieldset>
+							
+							<p:dataTable id="dtNfe" var="nf" value="#{empresaAdicionarBean.nfeConfiguracaes}" paginator="true" rows="10"	lazy="true" emptyMessage="Nenhum resultado encontrado">
+								<p:column headerText="Caminho Certificado Digital">
+									<h:outputText value="#{nf.nmCaminhoCerticadoDigital}" />
+								</p:column>
+								<p:column headerText="Nome Certificado Digital" class="txt-center">
+									<h:outputText value="#{nf.nmCerticadoDigital}" />
+								</p:column>
+								<p:column headerText="NfeCacertes">
+									<h:outputText value="#{nf.nmNFeCacerts}" />
+								</p:column>
+								<p:column headerText="Senha Certificado Digital" class="txt-center">
+									<h:outputText value="#{nf.nmCerticadoSenha}"/>
+								</p:column>
+								<p:column headerText="Status" class="txt-center">
+									<h:outputText value="#{nf.snStatus == true? 'Ativado' : 'Desativado'}"/>
+								</p:column>
+								<p:column width="90" class="txt-center">
+									<p:commandButton process="dtNfe" update=":frm:tabView:tabNfe :frm:tabView:dtNfe :frm2:msg" action="#{empresaAdicionarBean.editarNfeConfiguracaoNaLista(nf)}" icon="fa fa-edit" title="Editar"/>
+									
+									<p:commandButton process="dtNfe" update=":frm:tabView:dtNfe :frm2:msg" action="#{empresaAdicionarBean.excluirNfeConfiguracaoNaLista(nf)}" icon="fa fa-trash" title="Remover">
+										<p:confirm header="Excluir E-mail: #{nf.nmCerticadoDigital}" message="Você tem certeza?" icon="ui-icon-alert"/>
+									</p:commandButton>
+								</p:column>
+							</p:dataTable>
+						</div>
+					</p:tab>
+				</p:tabView>
+			</div>
+			
+			<p:confirmDialog global="true" showEffect="fade">
+				<p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+		</h:form>
+
+	</ui:define>
+</ui:composition>

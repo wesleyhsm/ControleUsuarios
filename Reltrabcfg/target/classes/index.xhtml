@@ -1,0 +1,41 @@
+<ui:composition template="template/login.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+	<ui:define name="titulo">Entrar</ui:define>
+	<ui:define name="conteudo">
+
+		<div id="box" class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1">
+			<div class="col-md-6 logo">
+				<img src="#{request.contextPath}/resources/img/logo-agro-fauna.png" />
+			</div>
+			<div class="col-md-6 title">
+				CFG WEB
+				<span>v0.01</span>
+			</div>
+			
+			<h:form class="row" action="index.xhtml">
+				<div class="col-md-12">
+					<h:outputLabel for="cod" value="Usuário" />
+					<p:inputText id="cod" value="#{loginBean.login.nmLogin}" placeholder="Usuário" required="true" requiredMessage="Usuario é Obrigatorio"/>
+				</div>
+				<div class="col-md-12">
+					<h:outputLabel for="pass" value="Senha" />
+					<p:password id="pass"  value="#{loginBean.login.nmSenha}" placeholder="Senha" required="true" requiredMessage="Senha é Obrigatorio"/>
+				</div>
+				<div class="col-md-12">
+					 <p:commandButton update="@form" action="#{loginBean.buscarLogin}" value="Entrar" class="right green" icon="fa fa-user" />						
+				</div>								
+				<br style="clear: both;"/>				
+				<div class="col-md-12">
+					<p:messages id="msg" showDetail="false" autoUpdate="false"/>
+				</div>				
+			</h:form>			
+		</div>
+		
+	</ui:define>
+</ui:composition>

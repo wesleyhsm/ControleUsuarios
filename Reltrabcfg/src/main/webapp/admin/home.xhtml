@@ -1,0 +1,20 @@
+<ui:composition template="../template/admin.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+	<ui:define name="titulo">Página Inicial</ui:define>
+
+	<ui:define name="conteudo">
+
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><h:link outcome="/admin/home.xhtml"><i class="fa fa-home"/></h:link></li>
+			<li class="breadcrumb-item">Página Inicial</li>
+		</ol>
+	
+	</ui:define>
+
+</ui:composition>

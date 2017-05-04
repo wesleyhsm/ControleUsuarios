@@ -1,0 +1,273 @@
+<ui:composition template="../../template/admin.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="titulo">Relacionar Usuário</ui:define>
+
+	<ui:define name="conteudo">
+
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><h:link outcome="/admin/home.xhtml"><i class="fa fa-home"/></h:link></li>
+			<li class="breadcrumb-item">Usuários</li>
+			<li class="breadcrumb-item">Relacionar</li>
+		</ol>
+	
+		<h:outputText value="Usuario sem permissão" rendered="#{usuariosRelacionarBean.usuarioPermissao.snAdicionar != true}"/>
+	
+		<h:form id="frm1" rendered="#{usuariosRelacionarBean.usuarioPermissao.snAdicionar}">
+			<div class="row">
+				<div class="col-md-12">
+					<p:toolbar>
+						<f:facet name="left">
+							<p:button outcome="/admin/usuarios/consultarUsuarios" value="Voltar" class="red" icon="fa fa-arrow-left" />
+						</f:facet>
+						<f:facet name="right">							
+							<p:commandButton update="@form frm" action="#{usuariosRelacionarBean.salvar}" value="Finalizar" class="green" icon="fa fa-save"/>
+						</f:facet>
+					</p:toolbar>
+					
+					<p:messages id="msg" closable="true" />
+				</div>
+			</div>
+		</h:form>
+		
+		<h:form styleClass="col-md-12" id="frm" rendered="#{usuariosRelacionarBean.usuarioPermissao.snAdicionar}">
+			<div class="row filter">
+
+				<p:tabView id="tabView">
+					<p:tab title="Login">
+						<div class="row">
+							<p:fieldset legend="" toggleable="" toggleSpeed="300" id="tabLogin">
+								<div class="row">
+									<div class="col-md-4 col-sm-6 col-xs-12">
+										<p:outputLabel for="login" value="login" class="label" />
+										<p:inputText id="login" value="#{usuariosRelacionarBean.login.nmLogin}" placeholder="Login" maxlength="50"/>
+									</div>		
+									<div class="col-md-4 col-sm-6 col-xs-12">
+										<p:outputLabel for="senha" value="senha" class="label" />
+										<p:inputText id="senha" value="#{usuariosRelacionarBean.login.nmSenha}" placeholder="Senha" maxlength="20"/>
+									</div>		
+									<div class="col-md-4 col-sm-6 col-xs-12">
+										<p:outputLabel value="status" for="status" class="label" />
+										<p:selectOneMenu id="status" value="#{usuariosRelacionarBean.login.snStatus}">
+											<f:selectItem itemLabel="Ativado" itemValue="true" />
+											<f:selectItem itemLabel="Desativado" itemValue="false" />						
+										</p:selectOneMenu>
+									</div>											
+								</div>
+							</p:fieldset>							
+						</div>
+					</p:tab>			
+					
+					<p:tab title="Funcionario">
+						<div class="row">
+							<p:fieldset legend="" toggleable="" toggleSpeed="300" id="tabFuncionario">
+								<div class="row">
+									<div class="col-md-4 col-sm-6 col-xs-12">
+										<p:outputLabel for="tipo1" value="Tipo de Busca" class="label" />
+										<p:selectOneMenu id="tipo1" value="#{usuariosRelacionarBean.funcionarioFiltro.nrTipoBusca}">
+											<f:selectItem itemLabel="Todos" itemValue="0" />
+											<f:selectItem itemLabel="Codigo" itemValue="1" />
+											<f:selectItem itemLabel="Nome" itemValue="2" />											
+										</p:selectOneMenu>
+									</div>
+		
+									<div class="col-md-4 col-sm-6 col-xs-12">
+										<p:outputLabel for="termo1" value="Termo da Busca" class="label" />
+										<p:inputText id="termo1" placeholder="Termo da Busca" value="#{usuariosRelacionarBean.funcionarioFiltro.nmTermoBusca}"/>
+									</div>
+		
+									<div class="col-md-4 col-sm-6 col-xs-12">
+										<p:outputLabel for="ordem1" value="Ordenação" class="label" />
+										<p:selectOneMenu id="ordem1" value="#{usuariosRelacionarBean.funcionarioFiltro.nrOrdenacao}">
+											<f:selectItem itemLabel="Crescente (A - Z)" itemValue="1" />
+											<f:selectItem itemLabel="Decrecente (Z - A)" itemValue="2" />
+											<f:selectItem itemLabel="Crescente (0 - 9)" itemValue="3" />
+											<f:selectItem itemLabel="Decrecente (9 - 0)" itemValue="4" />
+										</p:selectOneMenu>
+									</div>		
+								</div>
+								<div class="col-md-12 col-sm-6 col-xs-12">
+									<p:commandButton process="tabFuncionario" update=":frm:tabView:tabFuncionario :frm:tabView:dtFuncionario" value="Filtrar" class="blue" />
+								</div>
+							</p:fieldset>
+							
+							<p:dataTable id="dtFuncionario" var="funcionario" value="#{usuariosRelacionarBean.lazyFuncionario}" lazy="true" paginator="true" rows="10" emptyMessage="Nenhum resultado encontrado">
+								<p:column headerText="Código" width="80" style="text-align: center;">
+									<h:outputText value="#{funcionario.idPessoa}" />
+								</p:column>
+								<p:column headerText="Nome">
+									<h:outputText value="#{funcionario.nmFuncionario}" />
+								</p:column>
+								<p:column headerText="CPF" width="100" style="text-align: center;">
+									<h:outputText value="#{funcionario.nmCnpjCpf}" />
+								</p:column>
+								<p:column headerText="Status" width="100" style="text-align: center;">
+									<h:outputText value="#{funcionario.snStatus == true? 'Ativado' : 'Desativado'}"/>
+								</p:column>
+								<p:column headerText="" width="100" style="text-align: center;">
+									<p:commandButton update=":frm:tabView:tabDados :frm1:msg" action="#{usuariosRelacionarBean.selecionaFuncionario(funcionario)}" value="Selecionar" class="green"/>
+								</p:column>								
+							</p:dataTable>
+						
+							<p:fieldset legend="Funcionario Selecionado" toggleable="" toggleSpeed="300" id="tabDados">
+								<div class="row">											
+									<div class="col-md-4 col-sm-6 col-xs-12">
+										<p:outputLabel for="slCodigo" value="Codigo" class="label" />
+										<p:inputText id="slCodigo" value="#{usuariosRelacionarBean.funcionario.idPessoa}"  maxlength="60" placeholder="Codigo" readonly="true"/>
+									</div>									
+									<div class="col-md-4 col-sm-6 col-xs-12">
+										<p:outputLabel for="slNome" value="Nome" class="label" />
+										<p:inputText id="slNome" value="#{usuariosRelacionarBean.funcionario.nmFuncionario}" maxlength="60" placeholder="Nome" readonly="true"/>
+									</div>																	
+									<div class="col-md-4 col-sm-6 col-xs-12">
+										<p:outputLabel for="slCpf" value="CPF" class="label" />
+										<p:inputText id="slCpf" value="#{usuariosRelacionarBean.funcionario.nmCnpjCpf}" maxlength="14" placeholder="CPF" readonly="true"/>
+									</div>																										
+								</div>
+							</p:fieldset>
+						</div>						
+					</p:tab>
+
+					<p:tab title="Empresa">
+						<div class="row">
+							<p:fieldset legend="" toggleable="" toggleSpeed="300" id="tabEmpresa">
+								<div class="row">
+									<div class="col-md-4 col-sm-6 col-xs-12">
+										<p:outputLabel for="tipo2" value="Tipo de Busca" class="label" />
+										<p:selectOneMenu id="tipo2" value="#{usuariosRelacionarBean.empresaFiltro.nrTipoBusca}">
+											<f:selectItem itemLabel="Todos" itemValue="0" />
+											<f:selectItem itemLabel="Codigo" itemValue="1" />
+											<f:selectItem itemLabel="Razão Social" itemValue="2" />
+										</p:selectOneMenu>
+									</div>
+		
+									<div class="col-md-4 col-sm-6 col-xs-12">
+										<p:outputLabel for="termo2" value="Termo da Busca" class="label" />
+										<p:inputText id="termo2" value="#{usuariosRelacionarBean.empresaFiltro.nmTermoBusca}" placeholder="Termo da Busca" />
+									</div>
+		
+									<div class="col-md-4 col-sm-6 col-xs-12">
+										<p:outputLabel for="ordem2" value="Ordenação" class="label" />
+										<p:selectOneMenu id="ordem2" value="#{usuariosRelacionarBean.empresaFiltro.nrOrdenacao}">
+											<f:selectItem itemLabel="Crescente (A - Z)" itemValue="1" />
+											<f:selectItem itemLabel="Decrecente (Z - A)" itemValue="2" />
+											<f:selectItem itemLabel="Crescente (0 - 9)" itemValue="3" />
+											<f:selectItem itemLabel="Decrecente (9 - 0)" itemValue="4" />
+										</p:selectOneMenu>
+									</div>
+									<div class="col-md-12 col-sm-6 col-xs-12">
+										<p:commandButton process="tabEmpresa" update=":frm:tabView:tabEmpresa :frm:tabView:dtEmpresa" value="Filtrar" class="blue" />
+									</div>											
+								</div>
+							</p:fieldset>
+							
+							<p:dataTable id="dtEmpresa" var="empresa" value="#{usuariosRelacionarBean.lazyEmpresa}" lazy="true" paginator="true" rows="10" emptyMessage="Nenhum resultado encontrado">
+								<p:column headerText="Código" width="80" style="text-align: center;">
+									<h:outputText value="#{empresa.idPessoa}" />
+								</p:column>
+								<p:column headerText="Razão Social">
+									<h:outputText value="#{empresa.nmRazaoSocial}" />
+								</p:column>
+								<p:column headerText="Tipo">
+									<h:outputText value="#{empresa.nmFilial}" />
+								</p:column>
+								<p:column headerText="Status" width="100" style="text-align: center;">
+									<h:outputText value="#{empresa.snStatus == true? 'Ativado' : 'Desativado'}" />
+								</p:column>
+								<p:column headerText="" width="100" style="text-align: center;">
+									<p:commandButton update=":frm:tabView:dtEmpresa2 :frm1:msg" action="#{usuariosRelacionarBean.selecionaEmpresas(empresa)}" value="Selecionar" class="green"/>
+								</p:column>
+							</p:dataTable>
+							
+							<p:dataTable id="dtEmpresa2" var="empresa2" value="#{usuariosRelacionarBean.empresas}" emptyMessage="Nenhum resultado encontrado">
+								<f:facet name="header">
+							        Empresas Selecionadas
+							    </f:facet>
+								<p:column headerText="Código" width="80" style="text-align: center;">
+									<h:outputText value="#{empresa2.idPessoa}" />
+								</p:column>
+								<p:column headerText="Razão Social">
+									<h:outputText value="#{empresa2.nmRazaoSocial}" />
+								</p:column>
+								<p:column headerText="Tipo">
+									<h:outputText value="#{empresa2.nmFilial}" />
+								</p:column>
+								<p:column headerText="" width="100" style="text-align: center;">
+									<p:commandButton  update=":frm:tabView:dtEmpresa2 :frm1:msg" action="#{usuariosRelacionarBean.removerEmpresas(empresa2)}" value="Remover" class="green" />
+								</p:column>
+							</p:dataTable>
+						</div>
+					</p:tab>
+					
+					<p:tab title="Usuario">
+						<div class="row">
+							<p:fieldset legend="" toggleable="" toggleSpeed="300" id="tabUsuario">
+								<div class="row">
+									<div class="col-md-4 col-sm-6 col-xs-12">
+										<p:outputLabel for="tipo3" value="Tipo de Busca" class="label" />
+										<p:selectOneMenu id="tipo3" value="#{usuariosRelacionarBean.usuariosFiltro.nrTipoBusca}">
+											<f:selectItem itemLabel="Todos" itemValue="0" />
+											<f:selectItem itemLabel="Codigo" itemValue="1" />
+											<f:selectItem itemLabel="Nome" itemValue="2" />
+										</p:selectOneMenu>
+									</div>		
+									<div class="col-md-4 col-sm-6 col-xs-12">
+										<p:outputLabel for="termo3" value="Termo da Busca" class="label" />
+										<p:inputText id="termo3" value="#{usuariosRelacionarBean.usuariosFiltro.nmTermoBusca}" placeholder="Termo da Busca" />
+									</div>		
+									<div class="col-md-4 col-sm-6 col-xs-12">
+										<p:outputLabel for="ordem3" value="Ordenação" class="label" />
+										<p:selectOneMenu id="ordem3" value="#{usuariosRelacionarBean.usuariosFiltro.nrOrdenacao}">
+											<f:selectItem itemLabel="Crescente (A - Z)" itemValue="1" />
+											<f:selectItem itemLabel="Decrecente (Z - A)" itemValue="2" />
+											<f:selectItem itemLabel="Crescente (0 - 9)" itemValue="3" />
+											<f:selectItem itemLabel="Decrecente (9 - 0)" itemValue="4" />
+										</p:selectOneMenu>
+									</div>
+									<div class="col-md-12 col-sm-6 col-xs-12">
+										<p:commandButton process="tabUsuario" update=":frm:tabView:tabUsuario :frm:tabView:dtUsuario" value="Filtrar" class="blue" />
+									</div>		
+								</div>
+							</p:fieldset>
+							
+							<p:dataTable id="dtUsuario" var="usuario" value="#{usuariosRelacionarBean.lazyUsuarios}" lazy="true" paginator="true" rows="10" emptyMessage="Nenhum resultado encontrado">
+								<p:column headerText="Código" width="80" style="text-align: center;">
+									<h:outputText value="#{usuario.idUsuario}" />
+								</p:column>
+								<p:column headerText="Adicionar">
+									<h:outputText value="#{usuario.nmUsuario}" />
+								</p:column>
+								<p:column headerText="Status" width="100" style="text-align: center;">
+									<h:outputText value="#{usuario.snStatus == true? 'Ativado' : 'Desativado'}" />
+								</p:column>
+								<p:column headerText="" width="100" style="text-align: center;">
+									<p:commandButton update=":frm:tabView:tabDadosUsuario :frm1:msg" action="#{usuariosRelacionarBean.selecionaUsuario(usuario)}" value="Selecionar" class="green"/>
+								</p:column>
+							</p:dataTable>
+							
+							<p:fieldset legend="Usuario Selecionado" toggleable="" toggleSpeed="300" id="tabDadosUsuario">
+								<div class="row">											
+									<div class="col-md-4 col-sm-6 col-xs-12">
+										<p:outputLabel for="slCodigo2" value="Codigo" class="label" />
+										<p:inputText id="slCodigo2" value="#{usuariosRelacionarBean.usuario.idUsuario}"  maxlength="60" placeholder="Codigo" readonly="true"/>
+									</div>									
+									<div class="col-md-4 col-sm-6 col-xs-12">
+										<p:outputLabel for="slNome2" value="Nome" class="label" />
+										<p:inputText id="slNome2" value="#{usuariosRelacionarBean.usuario.nmUsuario}" maxlength="60" placeholder="Nome" readonly="true"/>
+									</div>																										
+								</div>
+							</p:fieldset>
+						</div>
+					</p:tab>												
+				</p:tabView>
+			</div>			
+		</h:form>
+				
+	</ui:define>
+</ui:composition>

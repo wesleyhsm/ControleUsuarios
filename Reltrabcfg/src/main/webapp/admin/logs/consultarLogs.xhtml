@@ -1,0 +1,94 @@
+<ui:composition template="../../template/admin.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="titulo">Consultar Logs</ui:define>
+
+	<ui:define name="conteudo">
+
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><h:link outcome="/admin/home.xhtml"><i class="fa fa-home"/></h:link></li>
+			<li class="breadcrumb-item">Logs</li>
+			<li class="breadcrumb-item">Consultar</li>
+		</ol>
+		
+		<h:outputText value="Usuario sem permissão" rendered="#{logsConsultarBean.usuarioPermissao.snVisualizar != true}"/>
+		
+		<h:form id="frmFiltro" rendered="#{logsConsultarBean.usuarioPermissao.snVisualizar}">
+			<div class="row">
+				<div class="col-md-12">
+					<p:toolbar>
+						<f:facet name="left">
+							<p:commandButton update="@form :frmdt:dtLogs" value="Filtrar" class="blue" icon="fa fa-filter" />
+						</f:facet>
+						<f:facet name="right">							
+						</f:facet>
+					</p:toolbar>
+					
+					<p:messages id="msg" autoUpdate="false" closable="true"/>
+				</div>
+			</div>
+			
+			<div class="row filter">
+				<div class="col-md-12">
+
+					<p:fieldset legend="Filtro" toggleable="true" toggleSpeed="300">
+						<div class="row">
+							<div class="col-md-4 col-sm-6 col-xs-12">
+								<p:outputLabel for="tipo" value="Tipo de Busca" class="label" />
+								<p:selectOneMenu id="tipo" value="#{logsConsultarBean.logFiltro.nrTipoBusca}">
+									<f:selectItem itemLabel="Todos" itemValue="0" />
+									<f:selectItem itemLabel="Codigo Funcionario" itemValue="1" />
+									<f:selectItem itemLabel="Codigo Registro" itemValue="2" />									
+								</p:selectOneMenu>
+							</div>
+							<div class="col-md-4 col-sm-6 col-xs-12">
+								<p:outputLabel for="termo" value="Termo da Busca" class="label" />
+								<p:inputText id="termo" placeholder="Termo da Busca" value="#{logsConsultarBean.logFiltro.nmTermoBusca}" />
+							</div>							
+							<div class="col-md-4 col-sm-6 col-xs-12">
+								<p:outputLabel for="ordem" value="Ordenação" class="label" />
+								<p:selectOneMenu id="ordem" value="#{logsConsultarBean.logFiltro.nrOrdenacao}">
+									<f:selectItem itemLabel="Data (Decrecente)" itemValue="1" />
+									<f:selectItem itemLabel="Data (Crescente)" itemValue="2" />									
+									<f:selectItem itemLabel="Crescente (0 - 9)" itemValue="3" />
+									<f:selectItem itemLabel="Decrecente (9 - 0)" itemValue="4" />																		
+																		
+								</p:selectOneMenu>
+							</div>
+						</div>
+					</p:fieldset>
+										
+				</div>
+			</div>
+		</h:form>
+
+		<h:form id="frmdt" rendered="#{logsConsultarBean.usuarioPermissao.snVisualizar}">
+			<p:dataTable id="dtLogs" var="log" value="#{logsConsultarBean.lazyLogs}" paginator="true" rows="10" lazy="true" reflow="true" emptyMessage="Nenhum resultado encontrado">
+				<p:column headerText="Código" width="100">
+					<h:outputText value="#{log.idLog}" />
+				</p:column>
+				<p:column headerText="Data" width="120" class="txt-center">
+					<h:outputText value="#{log.dtCriacao}">
+						<f:convertDateTime pattern="dd/MM/yy HH:mm" />
+					</h:outputText>
+				</p:column>				
+				<p:column headerText="Funcionario" width="250">
+					<h:outputText value="#{log.idPessoa}" /> - <h:outputText value="#{logsConsultarBean.buscarNomeFuncionario(log)}"/>
+				</p:column>
+				<p:column headerText="Registro" width="100">
+					<h:outputText value="#{log.idRegistro}" />
+				</p:column>				
+				<p:column headerText="Log">
+					<h:outputText value="#{log.nmMensagem}" />
+				</p:column>
+			</p:dataTable>									
+		</h:form>
+		
+	</ui:define>
+</ui:composition>

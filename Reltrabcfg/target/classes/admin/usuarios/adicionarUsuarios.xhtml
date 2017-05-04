@@ -1,0 +1,92 @@
+<ui:composition template="../../template/admin.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="titulo">Adicionar Usuário</ui:define>
+
+	<ui:define name="conteudo">
+		
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><h:link outcome="/admin/home.xhtml"><i class="fa fa-home"/></h:link></li>
+			<li class="breadcrumb-item">Usuário</li>
+			<li class="breadcrumb-item"><h:link outcome="/admin/usuarios/consultarUsuarios.xhtml">Consultar</h:link></li>
+			<li class="breadcrumb-item"><h:outputText id="titulo" value="#{usuariosAdicionarBean.nomeJanela == true? 'Editar' : 'Adicionar'}"/></li>
+		</ol>
+		
+		<h:outputText value="Usuario sem permissão" rendered="#{usuariosAdicionarBean.usuarioPermissao.snAdicionar != true}"/>
+		
+		<h:form id="frmFiltro" rendered="#{usuariosAdicionarBean.usuarioPermissao.snAdicionar}">
+			<div class="row">
+				<div class="col-md-12">
+					<p:toolbar>
+						<f:facet name="left">
+							<p:button outcome="/admin/usuarios/consultarUsuarios" value="Voltar" class="red" icon="fa fa-arrow-left" />
+						</f:facet>
+						<f:facet name="right">							
+							<p:commandButton update="@form :frmdt:dtPermissoes titulo" action="#{usuariosAdicionarBean.salvar}" value="Finalizar" class="green" icon="fa fa-save"/>
+						</f:facet>
+					</p:toolbar>
+					
+					<p:messages id="msg" closable="true" />
+				</div>
+			</div>
+		
+			<div class="row">
+				<div class="col-md-12">				
+					<p:fieldset legend="" toggleable="" toggleSpeed="300" class="filter">
+						<div class="row">
+																					
+							<div class="col-md-4 col-sm-6 col-xs-12">
+								<p:outputLabel value="nome" for="nome" class="label" />
+								<p:inputText id="nome" value="#{usuariosAdicionarBean.usuario.nmUsuario}" placeholder="nome" required="true"/>
+							</div>
+																			
+							<div class="col-md-4 col-sm-6 col-xs-12">				
+								<p:outputLabel value="status" for="status" class="label" />
+								<p:selectOneMenu id="status" value="#{usuariosAdicionarBean.usuario.snStatus}">
+									<f:selectItem itemLabel="Ativado" itemValue="true" />
+									<f:selectItem itemLabel="Desativado" itemValue="false" />						
+								</p:selectOneMenu>		
+							</div>
+																					
+						</div>
+					</p:fieldset>
+				</div>
+			</div>			
+		</h:form>
+		
+		<h:form id="frmdt" rendered="#{usuariosAdicionarBean.usuarioPermissao.snAdicionar}">
+			<p:dataTable id="dtPermissoes" var="usuariosPermissoes" value="#{usuariosAdicionarBean.usuarioPermissoes}" paginator="false" emptyMessage="Nenhum resultado encontrado">
+				<p:column headerText="Janela">
+					<h:outputText value="#{usuariosPermissoes.permissao.nmJanela}" />
+				</p:column>
+				<p:column headerText="Visualizar" width="100" style="text-align: center;">
+					<p:inputSwitch value="#{usuariosPermissoes.snVisualizar}" offLabel="Não" onLabel="Sim">					
+						<p:ajax event="change" process="@this" update="@form"	listener="#{usuariosAdicionarBean.atualizarUsuarioPermissao(usuariosPermissoes)}" />
+					</p:inputSwitch>
+				</p:column>
+				<p:column headerText="Adicionar" width="100" style="text-align: center;">
+					<p:inputSwitch value="#{usuariosPermissoes.snAdicionar}" offLabel="Não" onLabel="Sim">					
+						<p:ajax event="change" process="@this" update="@form"	listener="#{usuariosAdicionarBean.atualizarUsuarioPermissao(usuariosPermissoes)}" />
+					</p:inputSwitch>
+				</p:column>
+				<p:column headerText="Editar" width="100" style="text-align: center;">
+					<p:inputSwitch value="#{usuariosPermissoes.snEditar}" offLabel="Não" onLabel="Sim">					
+						<p:ajax event="change" process="@this" update="@form"	listener="#{usuariosAdicionarBean.atualizarUsuarioPermissao(usuariosPermissoes)}" />
+					</p:inputSwitch>
+				</p:column>				
+				<p:column headerText="Remover" width="100" style="text-align: center;">
+					<p:inputSwitch value="#{usuariosPermissoes.snRemover}" offLabel="Não" onLabel="Sim">					
+						<p:ajax event="change" process="@this" update="@form"	listener="#{usuariosAdicionarBean.atualizarUsuarioPermissao(usuariosPermissoes)}" />
+					</p:inputSwitch>
+				</p:column>
+			</p:dataTable>
+		</h:form>
+			
+	</ui:define>
+</ui:composition>
